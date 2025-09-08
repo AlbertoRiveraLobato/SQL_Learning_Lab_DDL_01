@@ -1,5 +1,9 @@
 
 let db;
+let predefinedQueries = {
+    create: "CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);",
+    insert: "INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');"
+};
 
 initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}` })
     .then(SQL => {
@@ -7,16 +11,8 @@ initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1
         document.getElementById("output").innerText = "Base de datos SQLite creada en memoria.";
     });
 
-function createTable() {
-    const sql = `CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);`;
-    db.run(sql);
-    document.getElementById("output").innerText = "Tabla 'alumnos' creada.";
-}
-
-function insertData() {
-    const sql = `INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');`;
-    db.run(sql);
-    document.getElementById("output").innerText = "Datos insertados en la tabla 'alumnos'.";
+function loadQuery(type) {
+    document.getElementById("sql-input").value = predefinedQueries[type];
 }
 
 function runQuery() {
@@ -36,4 +32,17 @@ function runQuery() {
     } catch (e) {
         document.getElementById("output").innerText = "Error: " + e.message;
     }
+}
+
+function saveQuery() {
+    const query = document.getElementById("sql-input").value;
+    const name = prompt("Nombre para el nuevo botón:");
+    if (!name) return;
+
+    const btn = document.createElement("button");
+    btn.textContent = name;
+    btn.onclick = () => {
+        document.getElementById("sql-input").value = query;
+    };
+    document.getElementById("custom-buttons").appendChild(btn);
 }

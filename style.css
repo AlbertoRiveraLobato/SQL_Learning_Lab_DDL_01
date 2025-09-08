@@ -39,3 +39,9 @@ th, td {
     padding: 8px;
     text-align: left;
 }
+
+#custom-buttons button {
+    margin: 5px;
+    padding: 8px;
+    font-size: 14px;
+}
