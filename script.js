@@ -9,10 +9,13 @@ initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1
     .then(SQL => {
         db = new SQL.Database();
         document.getElementById("output").innerText = "Base de datos SQLite creada en memoria.";
+        loadCustomButtons();
     });
 
 function loadQuery(type) {
-    document.getElementById("sql-input").value = predefinedQueries[type];
+    if (predefinedQueries[type]) {
+        document.getElementById("sql-input").value = predefinedQueries[type];
+    }
 }
 
 function runQuery() {
@@ -37,8 +40,22 @@ function runQuery() {
 function saveQuery() {
     const query = document.getElementById("sql-input").value;
     const name = prompt("Nombre para el nuevo botón:");
-    if (!name) return;
+    if (!name || !query) return;
 
+    const saved = JSON.parse(localStorage.getItem("customQueries") || "{}");
+    saved[name] = query;
+    localStorage.setItem("customQueries", JSON.stringify(saved));
+    addCustomButton(name, query);
+}
+
+function loadCustomButtons() {
+    const saved = JSON.parse(localStorage.getItem("customQueries") || "{}");
+    for (const name in saved) {
+        addCustomButton(name, saved[name]);
+    }
+}
+
+function addCustomButton(name, query) {
     const btn = document.createElement("button");
     btn.textContent = name;
     btn.onclick = () => {
