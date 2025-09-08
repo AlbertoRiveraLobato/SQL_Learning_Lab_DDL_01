@@ -2,33 +2,836 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Práctica de SQL DDL</title>
-    <!-- Enlace al archivo de estilos -->
-    style.css
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Playground - Práctica Interactiva de SQL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #336791;
+            --secondary: #6c9bcf;
+            --accent: #ff7d4d;
+            --light: #f5f9ff;
+            --dark: #2c3e50;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, var(--light) 0%, #e6f0ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-accent {
+            background: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background: #ff6a33;
+        }
+        
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 15px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(108, 155, 207, 0.2);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: rgba(108, 155, 207, 0.1);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .custom-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .custom-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .custom-btn:hover {
+            background: #e6f0ff;
+            border-color: var(--secondary);
+        }
+        
+        .custom-btn-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .example-queries {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 10px;
+        }
+        
+        .example-btn {
+            text-align: left;
+            padding: 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .example-btn:hover {
+            background: var(--light);
+            border-color: var(--secondary);
+        }
+        
+        .example-btn h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .example-btn p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .badge-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-intermediate {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .badge-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Simulador SQL con SQLite en el Navegador</h1>
-
-    <!-- Botones de acciones predefinidas y personalizadas -->
-    <div class="controls">
-        <button onclick="loadQuery('create')">Crear Tabla</button>
-        <button onclick="loadQuery('insert')">Insertar Datos</button>
-        <button onclick="runQuery()">Ejecutar Query</button>
-        <button onclick="saveQuery()">Guardar como botón</button>
+    <div class="container">
+        <header>
+            <h1>SQL Playground</h1>
+            <p class="subtitle">Practica SQL de forma interactiva y divertida</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Consultas de Ejemplo</span>
+                    </div>
+                    <div class="example-queries">
+                        <div class="example-btn" onclick="loadExample('create_table')">
+                            <h4>Crear Tabla <span class="badge badge-beginner">Fácil</span></h4>
+                            <p>Crea una tabla de alumnos</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('insert_data')">
+                            <h4>Insertar Datos <span class="badge badge-beginner">Fácil</span></h4>
+                            <p>Añade registros a la tabla</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('select_data')">
+                            <h4>Consultar Datos <span class="badge badge-beginner">Fácil</span></h4>
+                            <p>Selecciona y muestra datos</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('update_data')">
+                            <h4>Actualizar Datos <span class="badge badge-intermediate">Medio</span></h4>
+                            <p>Modifica registros existentes</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('join_tables')">
+                            <h4>Unir Tablas <span class="badge badge-advanced">Avanzado</span></h4>
+                            <p>Consulta múltiples tablas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Base de Datos</span>
+                        <div>
+                            <button class="btn btn-sm btn-warning" onclick="exportDB()"><i class="fas fa-download"></i> Exportar</button>
+                            <button class="btn btn-sm btn-accent" onclick="importDB()"><i class="fas fa-upload"></i> Importar</button>
+                            <button class="btn btn-sm btn-danger" onclick="resetDB()"><i class="fas fa-trash"></i> Reiniciar</button>
+                        </div>
+                    </div>
+                    <p>Gestiona tu base de datos actual. Puedes exportarla para guardarla o importar una anterior.</p>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Mis Consultas Guardadas</span>
+                    </div>
+                    <div id="custom-buttons" class="custom-buttons-grid">
+                        <!-- Los botones personalizados se generarán aquí -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Editor SQL</span>
+                        <div class="controls">
+                            <button class="btn btn-success" onclick="runQuery()"><i class="fas fa-play"></i> Ejecutar</button>
+                            <button class="btn" onclick="formatSQL()"><i class="fas fa-indent"></i> Formatear</button>
+                            <button class="btn btn-accent" onclick="saveQuery()"><i class="fas fa-save"></i> Guardar</button>
+                            <button class="btn btn-danger" onclick="clearEditor()"><i class="fas fa-trash"></i> Limpiar</button>
+                        </div>
+                    </div>
+                    
+                    <textarea id="sql-input" placeholder="Escribe tu consulta SQL aquí..."></textarea>
+                </div>
+                
+                <div class="panel">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('results')">Resultados</div>
+                        <div class="tab" onclick="switchTab('messages')">Mensajes</div>
+                        <div class="tab" onclick="switchTab('schema')">Esquema</div>
+                    </div>
+                    
+                    <div id="results" class="tab-content active">
+                        <div id="output">
+                            <p class="message info">Ejecuta una consulta para ver los resultados aquí.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="messages" class="tab-content">
+                        <div id="message-output">
+                            <p class="message info">Los mensajes de tus consultas aparecerán aquí.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="schema" class="tab-content">
+                        <div id="schema-output">
+                            <p class="message info">El esquema de tu base de datos aparecerá aquí.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>SQL Playground - Herramienta educativa para practicar SQL © 2023</p>
+        </footer>
     </div>
 
-    <!-- Área de texto editable para escribir o modificar la query -->
-    <textarea id="sql-input" placeholder="Escribe tu consulta SQL aquí..."></textarea>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script>
+        // Versión 2.0
+        // Mejoras: Persistencia de la base de datos, interfaz mejorada, ejemplos, etc.
+        
+        let db;
+        let predefinedQueries = {
+            create_table: "CREATE TABLE IF NOT EXISTS alumnos (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre TEXT NOT NULL,\n  edad INTEGER,\n  curso TEXT\n);",
+            insert_data: "INSERT INTO alumnos (nombre, edad, curso) VALUES\n('Ana García', 20, 'Bases de Datos'),\n('Luis Martínez', 22, 'Programación'),\n('Marta Rodríguez', 21, 'Bases de Datos'),\n('Carlos Sánchez', 19, 'Programación');",
+            select_data: "SELECT * FROM alumnos;",
+            update_data: "UPDATE alumnos SET edad = 23 WHERE nombre = 'Luis Martínez';",
+            join_tables: "CREATE TABLE IF NOT EXISTS cursos (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  nombre TEXT NOT NULL,\n  profesor TEXT\n);\n\nINSERT INTO cursos (nombre, profesor) VALUES\n('Bases de Datos', 'Dr. Pérez'),\n('Programación', 'Dra. Gómez');\n\nSELECT a.nombre, a.edad, c.nombre as curso, c.profesor\nFROM alumnos a\nJOIN cursos c ON a.curso = c.nombre;"
+        };
 
-    <!-- Aquí se mostrarán los botones personalizados guardados -->
-    <div id="custom-buttons"></div>
+        // Inicializa la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initApplication();
+        });
 
-    <!-- Resultado de la ejecución de la query -->
-    <div id="output"></div>
+        // Inicializa SQL.js y carga la base de datos
+        async function initApplication() {
+            try {
+                // Cargar SQL.js
+                const SQL = await initSqlJs({
+                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
+                });
+                
+                // Intentar cargar la base de datos desde localStorage
+                const dbData = localStorage.getItem('sqlPlaygroundDB');
+                
+                if (dbData) {
+                    const data = new Uint8Array(JSON.parse(dbData));
+                    db = new SQL.Database(data);
+                    showMessage("Base de datos cargada correctamente desde tu almacenamiento local.", "success");
+                } else {
+                    db = new SQL.Database();
+                    // Crear una tabla por defecto
+                    db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
+                    db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
+                    saveDB();
+                    showMessage("Nueva base de datos SQLite creada en memoria.", "success");
+                }
+                
+                loadCustomButtons();
+                showSchema();
+                
+            } catch (e) {
+                showMessage("Error al inicializar la base de datos: " + e.message, "error");
+                console.error(e);
+            }
+        }
 
-    <!-- Carga de la librería sql.js desde CDN -->
-    https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js</script>
-    <!-- Script principal de la aplicación -->
-    script.js</script>
+        // Guarda la base de datos en localStorage
+        function saveDB() {
+            if (!db) return;
+            
+            try {
+                const data = db.export();
+                const arrayData = Array.from(data);
+                localStorage.setItem('sqlPlaygroundDB', JSON.stringify(arrayData));
+            } catch (e) {
+                console.error("Error al guardar la base de datos:", e);
+            }
+        }
+
+        // Carga una consulta de ejemplo en el editor
+        function loadExample(type) {
+            if (predefinedQueries[type]) {
+                document.getElementById('sql-input').value = predefinedQueries[type];
+                showMessage("Ejemplo cargado. ¡Ahora puedes ejecutarlo o modificarlo!", "info");
+            }
+        }
+
+        // Ejecuta la consulta SQL
+        function runQuery() {
+            const input = document.getElementById('sql-input').value.trim();
+            if (!input) {
+                showMessage("Por favor, escribe una consulta SQL antes de ejecutar.", "error");
+                return;
+            }
+            
+            try {
+                // Ejecutar la consulta
+                const result = db.exec(input);
+                
+                // Mostrar resultados
+                if (result.length === 0) {
+                    showMessage("Consulta ejecutada correctamente. No se devolvieron resultados.", "success");
+                } else {
+                    let html = "<table><tr>" + 
+                        result[0].columns.map(col => `<th>${col}</th>`).join("") + 
+                        "</tr>";
+                    
+                    result[0].values.forEach(row => {
+                        html += "<tr>" + 
+                            row.map(val => `<td>${val}</td>`).join("") + 
+                            "</tr>";
+                    });
+                    
+                    html += "</table>";
+                    document.getElementById('output').innerHTML = html;
+                    showMessage(`Consulta ejecutada correctamente. Se devolvieron ${result[0].values.length} filas.`, "success");
+                }
+                
+                // Actualizar el esquema y guardar la base de datos
+                showSchema();
+                saveDB();
+                
+            } catch (e) {
+                showMessage("Error en la consulta: " + e.message, "error");
+                console.error(e);
+            }
+        }
+
+        // Guarda la consulta actual como un botón personalizado
+        function saveQuery() {
+            const query = document.getElementById('sql-input').value.trim();
+            if (!query) {
+                showMessage("No hay ninguna consulta para guardar.", "error");
+                return;
+            }
+            
+            const name = prompt("Nombre para la nueva consulta:");
+            if (!name) return;
+            
+            const saved = JSON.parse(localStorage.getItem('customQueries') || "{}");
+            saved[name] = query;
+            localStorage.setItem('customQueries', JSON.stringify(saved));
+            
+            addCustomButton(name, query);
+            showMessage(`Consulta guardada como "${name}".`, "success");
+        }
+
+        // Carga los botones personalizados desde localStorage
+        function loadCustomButtons() {
+            const saved = JSON.parse(localStorage.getItem('customQueries') || "{}");
+            for (const name in saved) {
+                addCustomButton(name, saved[name]);
+            }
+        }
+
+        // Añade un botón personalizado a la interfaz
+        function addCustomButton(name, query) {
+            const container = document.getElementById('custom-buttons');
+            
+            // Comprobar si el botón ya existe
+            const existingBtn = document.getElementById(`btn-${name.replace(/\s+/g, '-')}`);
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+            
+            const btnDiv = document.createElement('div');
+            btnDiv.className = 'custom-btn';
+            btnDiv.id = `btn-${name.replace(/\s+/g, '-')}`;
+            
+            const btnText = document.createElement('span');
+            btnText.textContent = name;
+            btnText.onclick = () => {
+                document.getElementById('sql-input').value = query;
+                showMessage(`Consulta "${name}" cargada en el editor.`, "info");
+            };
+            
+            const btnActions = document.createElement('div');
+            btnActions.className = 'custom-btn-actions';
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-danger btn-sm';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteQuery(name);
+            };
+            
+            btnActions.appendChild(deleteBtn);
+            btnDiv.appendChild(btnText);
+            btnDiv.appendChild(btnActions);
+            container.appendChild(btnDiv);
+        }
+
+        // Elimina una consulta guardada
+        function deleteQuery(name) {
+            if (!confirm(`¿Estás seguro de que quieres eliminar la consulta "${name}"?`)) return;
+            
+            const saved = JSON.parse(localStorage.getItem('customQueries') || "{}");
+            delete saved[name];
+            localStorage.setItem('customQueries', JSON.stringify(saved));
+            
+            const btn = document.getElementById(`btn-${name.replace(/\s+/g, '-')}`);
+            if (btn) btn.remove();
+            
+            showMessage(`Consulta "${name}" eliminada.`, "success");
+        }
+
+        // Muestra un mensaje al usuario
+        function showMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            
+            document.getElementById('message-output').appendChild(messageDiv);
+            // Hacer scroll al último mensaje
+            messageDiv.scrollIntoView({ behavior: 'smooth' });
+            
+            // Limpiar mensajes después de un tiempo
+            setTimeout(() => {
+                if (document.getElementById('message-output').children.length > 5) {
+                    document.getElementById('message-output').removeChild(
+                        document.getElementById('message-output').firstChild
+                    );
+                }
+            }, 5000);
+        }
+
+        // Muestra el esquema de la base de datos
+        function showSchema() {
+            try {
+                const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table';");
+                let html = "";
+                
+                if (tables.length && tables[0].values.length) {
+                    html += "<h3>Tablas en la base de datos:</h3>";
+                    
+                    tables[0].values.forEach(table => {
+                        const tableName = table[0];
+                        const schema = db.exec(`SELECT sql FROM sqlite_master WHERE name='${tableName}';`);
+                        
+                        html += `<div class='schema-table'><h4>Tabla: ${tableName}</h4>`;
+                        html += `<pre>${schema[0].values[0][0]}</pre></div>`;
+                    });
+                } else {
+                    html = "<p>No hay tablas en la base de datos.</p>";
+                }
+                
+                document.getElementById('schema-output').innerHTML = html;
+            } catch (e) {
+                console.error("Error al mostrar el esquema:", e);
+                document.getElementById('schema-output').innerHTML = "<p>Error al cargar el esquema.</p>";
+            }
+        }
+
+        // Cambia entre pestañas
+        function switchTab(tabName) {
+            // Ocultar todas las pestañas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar la pestaña seleccionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Actualizar pestañas activas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Encontrar y activar la pestaña correspondiente
+            const tabs = document.querySelectorAll('.tab');
+            for (let i = 0; i < tabs.length; i++) {
+                if (tabs[i].textContent.toLowerCase().includes(tabName.toLowerCase())) {
+                    tabs[i].classList.add('active');
+                    break;
+                }
+            }
+            
+            // Si es la pestaña de esquema, actualizarla
+            if (tabName === 'schema') {
+                showSchema();
+            }
+        }
+
+        // Limpia el editor
+        function clearEditor() {
+            if (confirm("¿Estás seguro de que quieres limpiar el editor?")) {
+                document.getElementById('sql-input').value = '';
+            }
+        }
+
+        // Formatea el SQL (simplemente una indentación básica)
+        function formatSQL() {
+            const input = document.getElementById('sql-input');
+            let sql = input.value;
+            
+            // Reemplazar palabras clave para añadir saltos de línea
+            sql = sql.replace(/(SELECT|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP BY|ORDER BY|HAVING|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|ALTER TABLE|DROP TABLE|VALUES|SET)/gi, '\n$1');
+            
+            // Añadir indentación después de comas en SELECT
+            sql = sql.replace(/,\s*/g, ',\n  ');
+            
+            input.value = sql.trim();
+            showMessage("SQL formateado. Revisa que el formato sea correcto.", "info");
+        }
+
+        // Exporta la base de datos
+        function exportDB() {
+            if (!db) {
+                showMessage("No hay base de datos para exportar.", "error");
+                return;
+            }
+            
+            try {
+                const data = db.export();
+                const blob = new Blob([data], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sql_playground_db.sqlite';
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                showMessage("Base de datos exportada correctamente.", "success");
+            } catch (e) {
+                showMessage("Error al exportar la base de datos: " + e.message, "error");
+            }
+        }
+
+        // Importa una base de datos
+        function importDB() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.sqlite';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function() {
+                    try {
+                        const arrayBuffer = reader.result;
+                        const data = new Uint8Array(arrayBuffer);
+                        
+                        // Cerrar la base de datos actual si existe
+                        if (db) db.close();
+                        
+                        // Crear una nueva base de datos con los datos importados
+                        initSqlJs({
+                            locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
+                        }).then(SQL => {
+                            db = new SQL.Database(data);
+                            saveDB();
+                            showMessage("Base de datos importada correctamente.", "success");
+                            showSchema();
+                        });
+                    } catch (e) {
+                        showMessage("Error al importar la base de datos: " + e.message, "error");
+                    }
+                };
+                
+                reader.readAsArrayBuffer(file);
+            };
+            
+            input.click();
+        }
+
+        // Reinicia la base de datos
+        function resetDB() {
+            if (confirm("¿Estás seguro de que quieres reiniciar la base de datos? Se perderán todos los datos.")) {
+                localStorage.removeItem('sqlPlaygroundDB');
+                
+                initSqlJs({
+                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
+                }).then(SQL => {
+                    db = new SQL.Database();
+                    // Crear una tabla por defecto
+                    db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
+                    db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
+                    saveDB();
+                    showMessage("Base de datos reiniciada correctamente.", "success");
+                    showSchema();
+                });
+            }
+        }
+    </script>
 </body>
 </html>
