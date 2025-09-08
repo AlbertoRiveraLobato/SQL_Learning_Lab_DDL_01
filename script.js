@@ -33,10 +33,10 @@ async function initApplication() {
         } else {
             db = new SQL.Database();
             // Crear una tabla por defecto
-            db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
-            db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
-            saveDB();
-            showMessage("Nueva base de datos SQLite creada en memoria.", "success");
+            //db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
+            //db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
+            //saveDB();
+            //showMessage("Nueva base de datos SQLite creada en memoria.", "success");
         }
         
         loadCustomButtons();
