@@ -1,4 +1,5 @@
-// v2.2: corregido error al importar base de datos y limpiando resultados en cada consulta
+// v2.3: Corregido problema de persistencia visual de tablas eliminadas
+// Versión 2.3 - SQL Playground - Sin tablas por defecto y corrección de visualización
 
 let db;
 let predefinedQueries = {
@@ -30,12 +31,10 @@ async function initApplication() {
             db = new SQL.Database(data);
             showMessage("Base de datos cargada correctamente desde tu almacenamiento local.", "success");
         } else {
+            // MODIFICACIÓN: Crear base de datos vacía sin tablas por defecto
             db = new SQL.Database();
-            // Crear una tabla por defecto
-            db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
-            db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
             saveDB();
-            showMessage("Nueva base de datos SQLite creada en memoria.", "success");
+            showMessage("Nueva base de datos SQLite vacía creada en memoria.", "success");
         }
         
         loadCustomButtons();
@@ -68,7 +67,7 @@ function loadExample(type) {
     }
 }
 
-// CORRECCIÓN: Ejecuta la consulta SQL (limpiando resultados previos)
+// Ejecuta la consulta SQL (limpiando resultados previos)
 function runQuery() {
     const input = document.getElementById('sql-input').value.trim();
     if (!input) {
@@ -76,7 +75,7 @@ function runQuery() {
         return;
     }
     
-    // LIMPIAR RESULTADOS PREVIOS ANTES DE EJECUTAR
+    // Limpiar resultados previos antes de ejecutar
     document.getElementById('output').innerHTML = '';
     
     try {
@@ -225,7 +224,12 @@ function showSchema() {
                 const schema = db.exec(`SELECT sql FROM sqlite_master WHERE name='${tableName}';`);
                 
                 html += `<div class='schema-table'><h4>Tabla: ${tableName}</h4>`;
-                html += `<pre>${schema[0].values[0][0]}</pre></div>`;
+                if (schema.length > 0 && schema[0].values.length > 0) {
+                    html += `<pre>${schema[0].values[0][0]}</pre>`;
+                } else {
+                    html += `<pre>Información del esquema no disponible</pre>`;
+                }
+                html += `</div>`;
             });
         } else {
             html = "<p>No hay tablas en la base de datos.</p>";
@@ -355,7 +359,7 @@ function importDB() {
     input.click();
 }
 
-// CORRECCIÓN: Reinicia la base de datos (limpiando la interfaz)
+// Reinicia la base de datos (limpiando la interfaz)
 function resetDB() {
     if (confirm("¿Estás seguro de que quieres reiniciar la base de datos? Se perderán todos los datos.")) {
         localStorage.removeItem('sqlPlaygroundDB');
@@ -363,24 +367,37 @@ function resetDB() {
         initSqlJs({
             locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
         }).then(SQL => {
+            // MODIFICACIÓN: Crear base de datos completamente vacía
             db = new SQL.Database();
-            // Crear una tabla por defecto
-            db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
-            db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
             saveDB();
             
-            // LIMPIAR LA INTERFAZ COMPLETAMENTE
+            // Limpiar la interfaz completamente
             clearResults();
             
-            showMessage("Base de datos reiniciada correctamente.", "success");
-            showSchema();
+            showMessage("Base de datos reiniciada correctamente. Base de datos vacía creada.", "success");
+            showSchema(); // Esto mostrará "No hay tablas en la base de datos"
         });
     }
 }
 
-// NUEVA FUNCIÓN: Limpia todos los resultados y mensajes
+// Limpia todos los resultados y mensajes
 function clearResults() {
     document.getElementById('output').innerHTML = '<p class="message info">Ejecuta una consulta para ver los resultados aquí.</p>';
     document.getElementById('message-output').innerHTML = '<p class="message info">Los mensajes de tus consultas aparecerán aquí.</p>';
-    document.getElementById('schema-output').innerHTML = '<p class="message info">El esquema de tu base de datos aparecerá aquí.</p>';
+    // Forzar la actualización del esquema para reflejar el estado actual
+    showSchema();
+}
+
+// NUEVA FUNCIÓN: Actualiza la visualización después de operaciones DDL
+function updateDisplayAfterDDL() {
+    // Limpiar resultados de consultas
+    document.getElementById('output').innerHTML = '<p class="message info">Ejecuta una consulta para ver los resultados aquí.</p>';
+    
+    // Actualizar el esquema para reflejar los cambios estructurales
+    showSchema();
+    
+    // Guardar el estado de la base de datos
+    saveDB();
+    
+    showMessage("Operación completada. Esquema actualizado.", "success");
 }
