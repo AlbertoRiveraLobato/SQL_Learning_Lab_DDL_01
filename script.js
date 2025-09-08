@@ -1,4 +1,4 @@
-// Versión 2.0 - SQL Playground
+// v2.1: separados en tres ficheros nuevamente
 // Mejoras: Persistencia de la base de datos, interfaz mejorada, ejemplos, etc.
 
 let db;
