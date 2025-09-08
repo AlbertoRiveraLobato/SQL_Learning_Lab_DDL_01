@@ -1,5 +1,4 @@
-// v2.1: separados en tres ficheros nuevamente
-// Mejoras: Persistencia de la base de datos, interfaz mejorada, ejemplos, etc.
+// v2.2: corregido error al importar base de datos y limpiando resultados en cada consulta
 
 let db;
 let predefinedQueries = {
@@ -33,10 +32,10 @@ async function initApplication() {
         } else {
             db = new SQL.Database();
             // Crear una tabla por defecto
-            //db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
-            //db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
-            //saveDB();
-            //showMessage("Nueva base de datos SQLite creada en memoria.", "success");
+            db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
+            db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
+            saveDB();
+            showMessage("Nueva base de datos SQLite creada en memoria.", "success");
         }
         
         loadCustomButtons();
@@ -69,13 +68,16 @@ function loadExample(type) {
     }
 }
 
-// Ejecuta la consulta SQL
+// CORRECCIÓN: Ejecuta la consulta SQL (limpiando resultados previos)
 function runQuery() {
     const input = document.getElementById('sql-input').value.trim();
     if (!input) {
         showMessage("Por favor, escribe una consulta SQL antes de ejecutar.", "error");
         return;
     }
+    
+    // LIMPIAR RESULTADOS PREVIOS ANTES DE EJECUTAR
+    document.getElementById('output').innerHTML = '';
     
     try {
         // Ejecutar la consulta
@@ -199,7 +201,7 @@ function showMessage(text, type) {
     // Hacer scroll al último mensaje
     messageDiv.scrollIntoView({ behavior: 'smooth' });
     
-    // Limpiar mensajes después de un tiempo
+    // Limpiar mensajes después de un tiempo (mantener solo los 5 más recientes)
     setTimeout(() => {
         if (document.getElementById('message-output').children.length > 5) {
             document.getElementById('message-output').removeChild(
@@ -337,6 +339,8 @@ function importDB() {
                 }).then(SQL => {
                     db = new SQL.Database(data);
                     saveDB();
+                    // Limpiar resultados al importar nueva base
+                    clearResults();
                     showMessage("Base de datos importada correctamente.", "success");
                     showSchema();
                 });
@@ -351,7 +355,7 @@ function importDB() {
     input.click();
 }
 
-// Reinicia la base de datos
+// CORRECCIÓN: Reinicia la base de datos (limpiando la interfaz)
 function resetDB() {
     if (confirm("¿Estás seguro de que quieres reiniciar la base de datos? Se perderán todos los datos.")) {
         localStorage.removeItem('sqlPlaygroundDB');
@@ -364,8 +368,19 @@ function resetDB() {
             db.run("CREATE TABLE IF NOT EXISTS alumnos (id INTEGER PRIMARY KEY, nombre TEXT, curso TEXT);");
             db.run("INSERT INTO alumnos (nombre, curso) VALUES ('Ana', 'SQL'), ('Luis', 'SQL');");
             saveDB();
+            
+            // LIMPIAR LA INTERFAZ COMPLETAMENTE
+            clearResults();
+            
             showMessage("Base de datos reiniciada correctamente.", "success");
             showSchema();
         });
     }
+}
+
+// NUEVA FUNCIÓN: Limpia todos los resultados y mensajes
+function clearResults() {
+    document.getElementById('output').innerHTML = '<p class="message info">Ejecuta una consulta para ver los resultados aquí.</p>';
+    document.getElementById('message-output').innerHTML = '<p class="message info">Los mensajes de tus consultas aparecerán aquí.</p>';
+    document.getElementById('schema-output').innerHTML = '<p class="message info">El esquema de tu base de datos aparecerá aquí.</p>';
 }
