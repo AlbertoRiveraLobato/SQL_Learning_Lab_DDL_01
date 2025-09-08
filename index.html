@@ -1,0 +1,22 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Práctica de SQL DDL</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Simulador SQL con SQLite en el Navegador</h1>
+    <div class="controls">
+        <button onclick="createTable()">Crear Tabla</button>
+        <button onclick="insertData()">Insertar Datos</button>
+        <button onclick="runQuery()">Ejecutar Consulta</button>
+    </div>
+    <textarea id="sql-input" placeholder="Escribe tu consulta SQL aquí..."></textarea>
+    <div id="output"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
