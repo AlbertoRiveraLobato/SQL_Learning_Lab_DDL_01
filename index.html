@@ -1,20 +1,120 @@
-
+<!-- v2.2: corregido error al importar base de datos y limpiando resultados en cada consulta -->
+ 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Práctica de SQL DDL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Playground - Práctica Interactiva de SQL</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Simulador SQL con SQLite en el Navegador</h1>
-    <div class="controls">
-        <button onclick="createTable()">Crear Tabla</button>
-        <button onclick="insertData()">Insertar Datos</button>
-        <button onclick="runQuery()">Ejecutar Consulta</button>
+    <div class="container">
+        <header>
+            <h1>SQL Playground</h1>
+            <p class="subtitle">Practica SQL de forma interactiva y divertida</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Consultas de Ejemplo</span>
+                    </div>
+                    <div class="example-queries">
+                        <div class="example-btn" onclick="loadExample('create_table')">
+                            <h4>Crear Tabla <span class="badge badge-beginner">Fácil</span></h4>
+                            <p>Crea una tabla de alumnos</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('insert_data')">
+                            <h4>Insertar Datos <span class="badge badge-beginner">Fácil</span></h4>
+                            <p>Añade registros a la tabla</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('select_data')">
+                            <h4>Consultar Datos <span class="badge badge-beginner">Fácil</span></h4>
+                            <p>Selecciona y muestra datos</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('update_data')">
+                            <h4>Actualizar Datos <span class="badge badge-intermediate">Medio</span></h4>
+                            <p>Modifica registros existentes</p>
+                        </div>
+                        <div class="example-btn" onclick="loadExample('join_tables')">
+                            <h4>Unir Tablas <span class="badge badge-advanced">Avanzado</span></h4>
+                            <p>Consulta múltiples tablas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Base de Datos</span>
+                        <div>
+                            <button class="btn btn-sm btn-warning" onclick="exportDB()"><i class="fas fa-download"></i> Exportar</button>
+                            <button class="btn btn-sm btn-accent" onclick="importDB()"><i class="fas fa-upload"></i> Importar</button>
+                            <button class="btn btn-sm btn-danger" onclick="resetDB()"><i class="fas fa-trash"></i> Reiniciar</button>
+                        </div>
+                    </div>
+                    <p>Gestiona tu base de datos actual. Puedes exportarla para guardarla o importar una anterior.</p>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Mis Consultas Guardadas</span>
+                    </div>
+                    <div id="custom-buttons" class="custom-buttons-grid">
+                        <!-- Los botones personalizados se generarán aquí -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="panel">
+                    <div class="panel-title">
+                        <span>Editor SQL</span>
+                        <div class="controls">
+                            <button class="btn btn-success" onclick="runQuery()"><i class="fas fa-play"></i> Ejecutar</button>
+                            <button class="btn" onclick="formatSQL()"><i class="fas fa-indent"></i> Formatear</button>
+                            <button class="btn btn-accent" onclick="saveQuery()"><i class="fas fa-save"></i> Guardar</button>
+                            <button class="btn btn-danger" onclick="clearEditor()"><i class="fas fa-trash"></i> Limpiar</button>
+                        </div>
+                    </div>
+                    
+                    <textarea id="sql-input" placeholder="Escribe tu consulta SQL aquí..."></textarea>
+                </div>
+                
+                <div class="panel">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('results')">Resultados</div>
+                        <div class="tab" onclick="switchTab('messages')">Mensajes</div>
+                        <div class="tab" onclick="switchTab('schema')">Esquema</div>
+                    </div>
+                    
+                    <div id="results" class="tab-content active">
+                        <div id="output">
+                            <p class="message info">Ejecuta una consulta para ver los resultados aquí.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="messages" class="tab-content">
+                        <div id="message-output">
+                            <p class="message info">Los mensajes de tus consultas aparecerán aquí.</p>
+                        </div>
+                    </div>
+                    
+                    <div id="schema" class="tab-content">
+                        <div id="schema-output">
+                            <p class="message info">El esquema de tu base de datos aparecerá aquí.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>SQL Playground - Herramienta educativa para practicar SQL © 2023</p>
+        </footer>
     </div>
-    <textarea id="sql-input" placeholder="Escribe tu consulta SQL aquí..."></textarea>
-    <div id="output"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <script src="script.js"></script>
